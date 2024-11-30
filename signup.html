@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    
+    <section id="main">
+        <div id="left-section">
+            <img src="assets/30576698_7718866 1.png" alt="quiz-image">
+        </div>
+        <div id="right-section">
+            <form   onsubmit="handleFormSubmit(event)" method="post">
+                <h2>Signup</h2>
+                <p>Sign Up to Join</p>
+
+                <label>Full Name<span style="color: red;">*</span></label><br>
+                <input type="text" name="email" id="name" placeholder="Full Name" required><br>
+                
+                <label>Email ID<span style="color: red;">*</span></label><br>
+                <input type="text" name="email" id="email" placeholder="xyz12@gmail.com" required><br>
+
+                <label >Password<span style="color: red;">*</span></label><br>
+                <input type="password" name="password" id="password" placeholder="password" required><br>
+                <div id="login-button">
+                    <button type="submit" ><a href="#">Login</a></button>
+                </div>
+                    
+                <div id="sign-with-google">
+                    <img src="assets/google logo.png" alt="google logo"> 
+                    <a href="#">Sign up with google</a>
+                </div>
+
+                <p id="signup"> <input type="checkbox" name="" id="">  I accept <a href="#">Terms & Conditions</a></p>
+                <p id="signup">  Have an account? <a href="login.html">Log in ?</a></p>
+
+            </form>
+
+        </div>
+    </section>
+    
+
+
+    <script src="index.js"></script>
+</body>
+</html>
