@@ -1,65 +1,4 @@
 
-//signup code
-
-// function handleFormSubmit(event) {
-//   event.preventDefault();
-
-//   const fullName = document.getElementById("name")?.value.trim();
-//   const email = document.getElementById("email")?.value.trim();
-//   const password = document.getElementById("password")?.value.trim();
-
-//   if (!fullName || !email || !password) {
-//     alert("Please fill out all fields.");
-//     return;
-//   }
-
-//   const userData = {
-//     id: Date.now(), // Unique user ID based on timestamp
-//     fullName,
-//     email,
-//     password,
-//     score: 0
-//   };
-
-//   let users = JSON.parse(localStorage.getItem("users")) || [];
-//   users.push(userData);
-//   localStorage.setItem("users", JSON.stringify(users));
-
-//   alert("Signup successful!");
-//   window.location.href = "login.html";
-
-//   // Reset form
-//   document.getElementById("signupForm").reset();
-
-// }
-
-
-// //login code
-
-
-
-
-//   function validateLogin(event) {
-//     event.preventDefault();
-  
-//     const email = document.getElementById("email").value.trim();
-//     const password = document.getElementById("password").value.trim();
-  
-//     const users = JSON.parse(localStorage.getItem("users")) || [];
-  
-//     const user = users.find(u => u.email === email && u.password === password);
-  
-//     if (user) {
-//       // Save the logged-in user ID
-//       localStorage.setItem("loggedInUserId", user.id);
-//       alert("Login successful!");
-//       window.location.href = "startQuiz.html"; // Redirect to quiz page
-//     } else {
-//       alert("Invalid email or password!");
-//     }
-//   }
-  
-// Signup code
 function handleFormSubmit(event) {
   event.preventDefault();
 
@@ -69,6 +8,12 @@ function handleFormSubmit(event) {
 
   if (!fullName || !email || !password) {
     alert("Please fill out all fields.");
+    return;
+  }
+
+  const passwordPattern = /^(?=.*[!@#$%^&*(),.?":{}|<>])[A-Za-z\d!@#$%^&*(),.?":{}|<>]{8,}$/;
+  if (!passwordPattern.test(password)) {
+    alert("Password must be at least 8 characters long and include at least one special character.");
     return;
   }
 
@@ -376,26 +321,55 @@ function saveScore(score) {
   }
 }
 
-function logout() {
-  // Remove logged-in user ID from localStorage
-  localStorage.removeItem("loggedInUserId");
+function displayLeaderboard() {
+  // Fetch users from localStorage
+  const users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // Clear any quiz data to reset the session
-  localStorage.removeItem("selectedQuestion");
+  // Sort users by score (highest first)
+  const sortedUsers = users.sort((a, b) => b.score - a.score);
 
-  // Redirect to login page
-  alert("You have been logged out.");
-  window.location.href = "login.html";
+  // Update podium (1st, 2nd, 3rd positions)
+  if (sortedUsers[0]) document.getElementById("score1").textContent = `${sortedUsers[0].fullName} - ${sortedUsers[0].score}`;
+  if (sortedUsers[1]) document.getElementById("score2").textContent = `${sortedUsers[1].fullName} - ${sortedUsers[1].score}`;
+  if (sortedUsers[2]) document.getElementById("score3").textContent = `${sortedUsers[2].fullName} - ${sortedUsers[2].score}`;
+
+  // Update rankings (#4, #5, #6)
+  if (sortedUsers[3]) document.getElementById("score4").textContent = `${sortedUsers[3].fullName} - ${sortedUsers[3].score}`;
+  if (sortedUsers[4]) document.getElementById("score5").textContent = `${sortedUsers[4].fullName} - ${sortedUsers[4].score}`;
+  if (sortedUsers[5]) document.getElementById("score6").textContent = `${sortedUsers[5].fullName} - ${sortedUsers[5].score}`;
 }
 
-// Add this check when the quiz page or any page that requires login is loaded:
-window.onload = function () {
+function displayUserRank() {
+  const users = JSON.parse(localStorage.getItem("users")) || [];
   const loggedInUserId = localStorage.getItem("loggedInUserId");
-  
-  if (!loggedInUserId) {
-    // If the user is not logged in, redirect to the login page
-    window.location.href = "login.html";
+
+  // Find the logged-in user's data
+  const user = users.find(u => u.id == loggedInUserId);
+
+  if (user) {
+    // Sort users by score (highest first) and find the rank
+    const sortedUsers = users.sort((a, b) => b.score - a.score);
+    const rank = sortedUsers.findIndex(u => u.id === user.id) + 1;
+
+    // user ka score update krne ke liye
+    const userMessage = document.getElementById("userMessage");
+    userMessage.textContent = `Wow! You ranked #${rank} with a score of ${user.score}!`;
+  } else {
+    alert("Error: User data not found.");
+    window.location.href = "login.html"; // wapis login pr bhejega agar user ka data nhi milega toh
   }
+}
+
+// page load hone par ye function ko call karega
+window.onload = function () {
+  displayLeaderboard();
+
+  // Logout ka function
+  document.getElementById("logoutBtn").addEventListener("click", function () {
+    localStorage.removeItem("loggedInUserId");
+    alert("You have been logged out.");
+    window.location.href = "login.html";
+  });
 };
 
 
@@ -403,7 +377,5 @@ window.onload = function () {
 
 
 
-displayQuestion();
 
-
-// document.getElementById("logoutBtn").addEventListener("click", logout);
+displayQuestion(); //first question print krne ke liye
