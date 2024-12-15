@@ -8,46 +8,47 @@
 </head>
 <body>
     
-   
   <header>
     <div class="nav">
         <div class="logo">
-            <img src="assets/Vector (1).png" alt="logo" style="    padding-left: 50px;">
+            <img src="assets/Vector (1).png" alt="logo" style="padding-left: 50px;">
         </div>
         <div class="menu">
             <img src="assets/Avatar.png" alt="person image">
+            <button id="logoutBtn" class="logout-button">Logout</button>
         </div>
     </div>
 </header>
 
-  <div class="leaderboard">
-    <div class="header"><h1>Wow You Rank 1st</h1></div>
-    <div class="sub-header"><p>Supporting Text</p></div>
+<div class="leaderboard">
+    <div class="header"><h1>Leaderboard</h1></div>
+    <div class="sub-header"><p>Top Scores</p></div>
 
     <div class="podium">
-      <div class="position">
-        <div class="score">#2</div>
-        <img src="https://via.placeholder.com/80" alt="Second Place">
-        <div class="score">Score<br>844</div>
-      </div>
-      <div class="position first">
-        <div class="crown"><img src="assets/fluent_crown-24-filled.png" alt=""></div>
-        <img src="assets/first rank holder.png" alt="First Place">
-        <div class="score">Score<br>1000</div>
-      </div>
-      <div class="position">
-        <div class="score">#3</div>
-        <img src="https://via.placeholder.com/80" alt="Third Place">
-        <div class="score">Score<br>620</div>
-      </div>
+        <!-- Positions 1, 2, 3 dynamically updated -->
+        <div class="position">
+            <div class="rank">#2</div>
+            <img src="https://via.placeholder.com/80" alt="Second Place">
+            <div class="score">Score: <span id="score2">0</span></div>
+        </div>
+        <div class="position first">
+            <img src="assets/first rank holder.png" alt="First Place">
+            <div class="score">Score: <span id="score1">0</span></div>
+        </div>
+        <div class="position">
+            <div class="rank">#3</div>
+            <img src="https://via.placeholder.com/80" alt="Third Place">
+            <div class="score">Score: <span id="score3">0</span></div>
+        </div>
     </div>
 
     <ul class="rankings">
-      <li><span>#4 Name</span><span>400</span></li>
-      <li><span>#5 Name</span><span>320</span></li>
-      <li><span>#6 Name</span><span>260</span></li>
+        <!-- Positions 4, 5, 6 dynamically updated -->
+        <li><span>#4</span><span id="score4">Score: 0</span></li>
+        <li><span>#5</span><span id="score5">Score: 0</span></li>
+        <li><span>#6</span><span id="score6">Score: 0</span></li>
     </ul>
-  </div>
+</div>
 
 
 </body>
