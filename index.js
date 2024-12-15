@@ -14,23 +14,19 @@ function handleFormSubmit(event) {
   }
 
   const userData = {
+    id: Date.now(), // Unique user ID based on timestamp
     fullName,
     email,
-    password
+    password,
+    score: 0
   };
 
-  let userArray = JSON.parse(localStorage.getItem("userArray")) || [];
+  let users = JSON.parse(localStorage.getItem("users")) || [];
+  users.push(userData);
+  localStorage.setItem("users", JSON.stringify(users));
 
-  userArray.push(userData);
-
-  try {
-    localStorage.setItem("userArray", JSON.stringify(userArray));
-    alert("Signup data saved locally!");
-    window.location.href('login.html')
-  } catch (e) {
-    alert("Error saving data to local storage.");
-    console.error(e);
-  }
+  alert("Signup successful!");
+  window.location.href = "login.html";
 
   // Reset form
   event.target.reset();
@@ -41,31 +37,27 @@ function handleFormSubmit(event) {
 
 
 
-function validateLogin(event) {
-  event.preventDefault();
 
-  const inputValue = document.getElementById('email').value;
-  const passValue = document.getElementById('password').value;
-  console.log(localStorage.getItem('userArray'))
-
-  const users = JSON.parse(localStorage.getItem('userArray'));
-
-  const userFound = users.find(
-    (user) => inputValue === user.email && passValue === user.password
-  );
-
-  if (!userFound) {
-    alert("No registered data found.");
-
-    return;
+  function validateLogin(event) {
+    event.preventDefault();
+  
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value.trim();
+  
+    const users = JSON.parse(localStorage.getItem("users")) || [];
+  
+    const user = users.find(u => u.email === email && u.password === password);
+  
+    if (user) {
+      // Save the logged-in user ID
+      localStorage.setItem("loggedInUserId", user.id);
+      alert("Login successful!");
+      window.location.href = "startQuiz.html"; // Redirect to quiz page
+    } else {
+      alert("Invalid email or password!");
+    }
   }
-
-  if (userFound) {
-
-    window.location.href = "startQuiz.html"
-  }
-
-}
+  
 
 
 
@@ -182,11 +174,10 @@ let quizData = [
     "choosedAnswer": null
   }
 ]
-;
+  ;
 
 const selectedQuestions = quizData.sort(() => Math.random() - 0.5).slice(0, 10);
 
-console.log(selectedQuestions);
 
 localStorage.setItem("selectedQuestion", JSON.stringify(selectedQuestions));
 
@@ -196,52 +187,149 @@ let data = JSON.parse(localStorage.getItem("selectedQuestion")) || [];
 let currentIndex = 0;
 const totalQuestions = data.length;
 
+// function displayQuestion() {
+//   if (data && data.length > 0) {
+//     currentIndex = currentIndex % totalQuestions;
+//     document.getElementById("ques-number").innerHTML = currentIndex + 1;
+
+//     const randomQue = data[currentIndex];
+
+//     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
+
+//     const list = document.getElementById("option-list");
+//     list.innerHTML = "";
+//     randomQue.answers.forEach((option, index) => {
+//       const listItem = document.createElement("li");
+//       listItem.textContent = option;
+
+//       if (randomQue.choosedAnswer === index) {
+//         listItem.classList.add("selected");
+//         listItem.style.backgroundColor = "#f3bd00";
+//         listItem.style.width = "fit-content";
+//         listItem.style.borderRadius = "10px";
+//       }
+
+//       listItem.addEventListener("click", () => {
+//         const chosenAnswer = index;
+//         const questionData = {
+//           question: randomQue.question,
+//           chosenAnswer: chosenAnswer,
+//           correctAnswer: randomQue.correct,
+//         };
+//         if (chosenAnswer === randomQue.correct) {
+
+//           score += 10;
+//         } else {
+//           console.log("Your answer is wrong");
+//         }
+//       });
+
+//       list.appendChild(listItem);
+
+
+
+
+//     });
+
+
+//     console.log({ score })
+//     const optionList = document.getElementById("option-list");
+//     optionList.addEventListener("click", function (event) {
+//       if (event.target.tagName === "LI") {
+//         let selectedElement = document.getElementsByClassName('selected');
+//         if (selectedElement.length) {
+//           selectedElement[0].style = "";
+//           selectedElement[0].classList.remove('selected');
+//         }
+
+       
+  
+
+//         event.target.classList.add("selected");
+//         event.target.style.backgroundColor = "#f3bd00";
+//         event.target.style.width = "fit-content";
+//         event.target.style.borderRadius = "10px";
+
+       
+
+//         console.log("Selected Option:", event.target.textContent.trim());
+//       }
+//     });
+
+//     updateProgress();
+//   }
+// }
+
 function displayQuestion() {
   if (data && data.length > 0) {
     currentIndex = currentIndex % totalQuestions;
     document.getElementById("ques-number").innerHTML = currentIndex + 1;
 
-    console.log("Current Index:", currentIndex);
-
     const randomQue = data[currentIndex];
-
     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
 
     const list = document.getElementById("option-list");
     list.innerHTML = "";
-    randomQue.answers.forEach(option => {
+    randomQue.answers.forEach((option, index) => {
       const listItem = document.createElement("li");
       listItem.textContent = option;
+
+      // Highlight previously selected option
+      if (randomQue.choosedAnswer === index) {
+        listItem.classList.add("selected");
+        listItem.style.backgroundColor = "#f3bd00";
+        listItem.style.width = "fit-content";
+        listItem.style.borderRadius = "10px";
+      }
+
+      listItem.addEventListener("click", () => {
+        // Save selected answer
+        randomQue.choosedAnswer = index;
+        if (index === randomQue.correct) {
+          score += 10;
+        }
+
+        // Clear previous selection
+        const selectedElement = document.querySelector(".selected");
+        if (selectedElement) {
+          selectedElement.classList.remove("selected");
+          selectedElement.style = "";
+        }
+
+        // Highlight the current selection
+        listItem.classList.add("selected");
+        listItem.style.backgroundColor = "#f3bd00";
+        listItem.style.width = "fit-content";
+        listItem.style.borderRadius = "10px";
+
+        console.log("Selected Option:", listItem.textContent.trim());
+      });
+
       list.appendChild(listItem);
     });
 
-    const optionList = document.getElementById("option-list");
-    optionList.addEventListener("click", function (event) {
-      if (event.target.tagName === "LI") {
-        let selectedElement = document.getElementsByClassName('selected');
-        if (selectedElement.length) {
-          selectedElement[0].style = "";
-          selectedElement[0].classList.remove('selected');
-        }
 
-        event.target.classList.add("selected");
-        event.target.style.backgroundColor = "#f3bd00";
-        event.target.style.width = "fit-content";
-        event.target.style.borderRadius = "10px"; 
-        
-
-        console.log("Selected Option:", event.target.textContent.trim());
-      }
-    });
+    const previousBtn = document.getElementById("previousBtn");
+    if (currentIndex === 0) {
+      previousBtn.style.display = "none"; 
+    } else {
+      previousBtn.style.display = "inline-block"; 
+      previousBtn.style.justifyContent = "dl";
+    }
 
     updateProgress();
   }
 }
 
+
+
+
 function nextQuestion() {
   if (currentIndex < totalQuestions - 1) {
     currentIndex++;
     displayQuestion();
+    // checkAnswer();
+
   } else {
     alert("You've reached the last question!");
   }
@@ -256,14 +344,49 @@ function previousQuestion() {
   }
 }
 
+
+
 function updateProgress() {
-  const progressPercentage = ((currentIndex+1) / totalQuestions) * 100;
-  console.log(progressPercentage);
+  const progressPercentage = ((currentIndex + 1) / totalQuestions) * 100;
   let progressBar = document.getElementById("progressBar");
   progressBar.style.width = progressPercentage + "%";
 }
 
-// Call displayQuestion initially to show the first question
+
+let score = 0;
+
+function checkAnswer(chosenAnswer, randomQue) {
+  if (chosenAnswer === randomQue.correct) {
+    score++;
+  }
+
+  return score;
+}
+
+if(score>=100){
+
+  window.location.href = "leaderboard.html";
+}else
+
+
+function saveScore(score) {
+  const loggedInUserId = localStorage.getItem("loggedInUserId");
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+
+  const user = users.find(u => u.id == loggedInUserId);
+
+  if (user) {
+    user.score = score; // Update the user's score
+    localStorage.setItem("users", JSON.stringify(users)); // Save updated users
+    alert("Score saved!");
+    window.location.href = "leaderboard.html"; // Redirect to leaderboard
+  } else {
+    alert("Error: User not found!");
+  }
+}
+
+
+
 displayQuestion();
 
 
