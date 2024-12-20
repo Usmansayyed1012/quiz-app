@@ -32,7 +32,7 @@ function handleFormSubmit(event) {
   alert("Signup successful!");
   window.location.href = "login.html";
 
-  // Reset form
+ 
   document.getElementById("signupForm").reset();
 }
 
@@ -171,8 +171,7 @@ let quizData = [
     "correct": 1,
     "choosedAnswer": null
   }
-]
-  ;
+];
 
 const selectedQuestions = quizData.sort(() => Math.random() - 0.5).slice(0, 10);
 
@@ -187,12 +186,89 @@ const totalQuestions = data.length;
 
 
 
+// function displayQuestion() {
+//   if (data && data.length > 0) {
+//     currentIndex = currentIndex % totalQuestions;
+//     document.getElementById("ques-number").innerHTML = currentIndex + 1;
+
+//     const randomQue = data[currentIndex];
+//     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
+
+//     const list = document.getElementById("option-list");
+//     list.innerHTML = "";
+//     randomQue.answers.forEach((option, index) => {
+//       const listItem = document.createElement("li");
+//       listItem.textContent = option;
+
+//       // Highlight previously selected option
+//       if (randomQue.choosedAnswer === index) {
+//         listItem.classList.add("selected");
+//         listItem.style.backgroundColor = "#f3bd00";
+//         listItem.style.borderRadius = "10px";
+        
+
+       
+//       }
+
+//       listItem.addEventListener("click", () => {
+//         // Save selected answer
+//         randomQue.choosedAnswer = index;
+
+//         if (index === randomQue.correct) {
+//           score += 10;
+//         }
+
+//         // Clear previous selection
+//         const options = list.querySelectorAll("li");
+//         options.forEach(option => {
+//           option.classList.remove("selected");
+//           option.style = "";
+//         });
+
+//         // Highlight the current selection
+//         listItem.classList.add("selected");
+//         listItem.style.backgroundColor = "#f3bd00";
+//         listItem.style.borderRadius = "10px";
+//         listItem.style.width="fit-content";
+
+//         document.getElementById("nextBtn").disabled = false;
+       
+
+//         console.log("Selected Option:", listItem.textContent.trim());
+//       });
+
+//       list.appendChild(listItem);
+//     });
+
+//     // Handle Previous Button Visibility
+//     const previousBtn = document.getElementById("previousBtn");
+
+//       if (currentIndex === 0) {
+//         previousBtn.style.display = "none"; // Agar pehla question hai toh button hide hojayega
+//       } else {
+//         previousBtn.style.display = "inline-block"; // Baki cases me button dikhayega
+//       }
+
+
+//     updateProgress();
+//   }
+// }
+
+
+
+
 function displayQuestion() {
   if (data && data.length > 0) {
     currentIndex = currentIndex % totalQuestions;
     document.getElementById("ques-number").innerHTML = currentIndex + 1;
 
     const randomQue = data[currentIndex];
+
+    // Ensure choosedAnswer is initialized
+    if (randomQue.choosedAnswer === undefined) {
+      randomQue.choosedAnswer = null;
+    }
+
     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
 
     const list = document.getElementById("option-list");
@@ -206,9 +282,6 @@ function displayQuestion() {
         listItem.classList.add("selected");
         listItem.style.backgroundColor = "#f3bd00";
         listItem.style.borderRadius = "10px";
-        listItem.classList.add("fit-content");
-
-       
       }
 
       listItem.addEventListener("click", () => {
@@ -230,10 +303,9 @@ function displayQuestion() {
         listItem.classList.add("selected");
         listItem.style.backgroundColor = "#f3bd00";
         listItem.style.borderRadius = "10px";
+        listItem.style.width = "fit-content";
 
         document.getElementById("nextBtn").disabled = false;
-       
-
         console.log("Selected Option:", listItem.textContent.trim());
       });
 
@@ -242,32 +314,43 @@ function displayQuestion() {
 
     // Handle Previous Button Visibility
     const previousBtn = document.getElementById("previousBtn");
-    previousBtn.style.display = currentIndex === 0 ? "none" : "inline-block";
+    if (previousBtn) {
+      if (currentIndex === 0) {
+        previousBtn.style.display = "none"; // If it's the first question, hide the button
+      } else {
+        previousBtn.style.display = "inline-block"; // Show the button for other cases
+      }
+    }
 
     updateProgress();
+  } else {
+    console.error("No questions found in data");
   }
 }
-
-
 
 
 function nextQuestion() {
-  
+
   const currentQuestion = data[currentIndex];
+
+  
   if (currentQuestion.choosedAnswer === null) {
-    alert("Please select an answer before proceeding!");
+    alert("Please select an answer before proceeding!"); 
     return; 
   }
 
+  
   if (currentIndex < totalQuestions - 1) {
-    currentIndex++;
-    displayQuestion();
+    currentIndex++; 
+    displayQuestion(); 
+
   } else {
-    saveScore(score);
-    alert("Quiz Complete! Your score: " + score);
-    window.location.href = "leaderboard.html";
+    saveScore(score); 
+    alert("Quiz Complete! Your score: " + score); 
+    window.location.href = "leaderboard.html"; 
   }
 }
+
 
 
 
@@ -322,55 +405,127 @@ function saveScore(score) {
 }
 
 function displayLeaderboard() {
-  // Fetch users from localStorage
   const users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // Sort users by score (highest first)
+  if (users.length === 0) {
+    console.log("No user data available");
+    return;
+  }
+
   const sortedUsers = users.sort((a, b) => b.score - a.score);
 
-  // Update podium (1st, 2nd, 3rd positions)
-  if (sortedUsers[0]) document.getElementById("score1").textContent = `${sortedUsers[0].fullName} - ${sortedUsers[0].score}`;
-  if (sortedUsers[1]) document.getElementById("score2").textContent = `${sortedUsers[1].fullName} - ${sortedUsers[1].score}`;
-  if (sortedUsers[2]) document.getElementById("score3").textContent = `${sortedUsers[2].fullName} - ${sortedUsers[2].score}`;
-
-  // Update rankings (#4, #5, #6)
-  if (sortedUsers[3]) document.getElementById("score4").textContent = `${sortedUsers[3].fullName} - ${sortedUsers[3].score}`;
-  if (sortedUsers[4]) document.getElementById("score5").textContent = `${sortedUsers[4].fullName} - ${sortedUsers[4].score}`;
-  if (sortedUsers[5]) document.getElementById("score6").textContent = `${sortedUsers[5].fullName} - ${sortedUsers[5].score}`;
+  for (let i = 0; i < 6; i++) {
+    const user = sortedUsers[i];
+    if (user) {
+      const scoreElement = document.getElementById(`score${i + 1}`);
+      if (scoreElement) {
+        scoreElement.textContent = `${user.fullName} - ${user.score}`;
+      } else {
+        console.log(`Element score${i + 1} not found`);
+      }
+    }
+  }
 }
 
+window.onload = function() {
+  displayLeaderboard();
+};
+
+
+
+
 function displayUserRank() {
+  // Users aur logged-in user ka data localStorage se lena hai
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const loggedInUserId = localStorage.getItem("loggedInUserId");
 
-  // Find the logged-in user's data
+  // Logged-in user ka data search karna hai
+  let user = null;
+  for (let i = 0; i < users.length; i++) {
+    if (users[i].id == loggedInUserId) {
+      user = users[i];
+      break;
+    }
+  }
+
+  // Agar user mil gaya
+  if (user) {
+    // Users ko score ke hisaab se sort karna hai
+    for (let i = 0; i < users.length; i++) {
+      for (let j = i + 1; j < users.length; j++) {
+        if (users[i].score < users[j].score) {
+          let temp = users[i];
+          users[i] = users[j];
+          users[j] = temp;
+        }
+      }
+    }
+
+    // User ki rank dhoondna hai
+    let rank = 1;
+    for (let i = 0; i < users.length; i++) {
+      if (users[i].id == user.id) {
+        rank = i + 1;
+        break;
+      }
+    }
+
+    // User ke liye message dikhana hai
+    const userMessage = document.getElementById("userMessage");
+    userMessage.textContent = "Wow! You ranked #" + rank + " with a score of " + user.score + "!";
+  } else {
+    // Agar user ka data nahi mila toh login page pe bhejna hai
+    alert("Error: User data not found.");
+    window.location.href = "login.html";
+  }
+}
+
+function displayUserRank() {
+ 
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const loggedInUserId = localStorage.getItem("loggedInUserId");
+
+
   const user = users.find(u => u.id == loggedInUserId);
 
   if (user) {
-    // Sort users by score (highest first) and find the rank
-    const sortedUsers = users.sort((a, b) => b.score - a.score);
-    const rank = sortedUsers.findIndex(u => u.id === user.id) + 1;
+    
+    users.sort((a, b) => b.score - a.score);
 
-    // user ka score update krne ke liye
-    const userMessage = document.getElementById("userMessage");
-    userMessage.textContent = `Wow! You ranked #${rank} with a score of ${user.score}!`;
+   
+    const rank = users.findIndex(u => u.id === loggedInUserId) + 1;
+
+ 
+    document.getElementById("userRank").textContent = `#${rank}`;
   } else {
-    alert("Error: User data not found.");
-    window.location.href = "login.html"; // wapis login pr bhejega agar user ka data nhi milega toh
+    alert("User not found! Please log in again.");
+    window.location.href = "login.html";  
   }
 }
+
+// Call the function to display the rank when the page loads
+window.onload = displayUserRank;
+
+
+
 
 // page load hone par ye function ko call karega
 window.onload = function () {
   displayLeaderboard();
-
+}
   // Logout ka function
-  document.getElementById("logoutBtn").addEventListener("click", function () {
-    localStorage.removeItem("loggedInUserId");
-    alert("You have been logged out.");
-    window.location.href = "login.html";
-  });
-};
+  window.onload = function () {
+    var logoutBtn = document.getElementById("logoutBtn");
+    
+    if (logoutBtn) {
+      logoutBtn.onclick = function () {
+        localStorage.removeItem("loggedInUserId");
+        alert("You have been logged out.");
+        window.location.href = "login.html";
+      };
+    }
+  };
+  
 
 
 
