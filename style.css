@@ -240,7 +240,7 @@ header{
 }
 #next-page{
     display: flex;
-    justify-content: space-between;
+   justify-content: space-between;
 }
 
 #quiz h1{
@@ -278,16 +278,6 @@ header{
     padding-left: 10px;
 }
 
-
-
-/* #quiz ol li:hover{
-    background-color: #f3bd00;
-    width: fit-content;
-    border-radius: 10px;
-    padding-left: 10px;
-    padding-right: 10px;
-} */
-
 #quiz a{
     font-family: Inter;
     font-size: 32px;
@@ -296,6 +286,21 @@ header{
     color: #0948B4;
 
 }
+
+
+/* #previousBtn {
+    color: blue;
+    cursor: pointer;
+    text-align: center;
+    background: none;
+    border: none;
+    font-size: 24px;
+    padding: 0;
+    position: fixed;
+    bottom: 60px;
+    left: 10px;
+} */
+
 
 .logout-button {
     background-color: #f44336; /* Red color */

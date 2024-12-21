@@ -111,7 +111,7 @@ function displayQuestion() {
     });
 
     const previousBtn = document.getElementById("previousBtn");
-    previousBtn.style.display = currentIndex === 0 ? "none" : "inline-block";
+    previousBtn.style.visibility = currentIndex === 0 ? "hidden" : "visible";
     updateProgress();
   }
 }
@@ -156,55 +156,51 @@ function saveScore(score) {
     localStorage.setItem("users", JSON.stringify(users));
     alert("Your score is saved!");
     window.location.href = "leaderboard.html";
-  } else {
-    alert("Error: User not found!");
-  }
+  } 
 }
 
 function displayLeaderboard() {
-  // Get user data from localStorage, or use an empty array if not available
-  const users = JSON.parse(localStorage.getItem("users")) || [];
+  var users = JSON.parse(localStorage.getItem("users")) || [];
 
-  // If no users are available, show "N/A" for user rank and exit
   if (users.length === 0) {
     console.log("No user data available");
-    document.getElementById("userRank").textContent = "N/A";
+    document.getElementById("userRank").textContent = " ";
     return;
   }
 
-  // Sort users by their score in descending order
-  users.sort((a, b) => (b.score || 0) - (a.score || 0));
+  users.sort(function (a, b) {
+    return (b.score || 0) - (a.score || 0);
+  });
 
-  // Show the rank of the top user (assumed to be the current user)
-  const topUser = users[0];
+  var topUser = users[0];
   if (topUser) {
-    document.getElementById("userRank").textContent = "1"; // Rank 1 for the top user
+    document.getElementById("userRank").textContent = "1"; 
   }
 
   // Update the top 3 scores (Podium)
-  const score1 = document.getElementById("score1");
-  const score2 = document.getElementById("score2");
-  const score3 = document.getElementById("score3");
+  var score1 = document.getElementById("score1");
+  var score2 = document.getElementById("score2");
+  var score3 = document.getElementById("score3");
 
   if (score1 && users[0]) {
-    score1.textContent = `${users[0].fullName || "Unknown"} - ${users[0].score || 0}`;
+    score1.textContent = (users[0].fullName || "Unknown") + " - " + (users[0].score || 0);
   }
 
   if (score2 && users[1]) {
-    score2.textContent = `${users[1].fullName || "Unknown"} - ${users[1].score || 0}`;
+    score2.textContent = (users[1].fullName || "Unknown") + " - " + (users[1].score || 0);
   }
 
   if (score3 && users[2]) {
-    score3.textContent = `${users[2].fullName || "Unknown"} - ${users[2].score || 0}`;
+    score3.textContent = (users[2].fullName || "Unknown") + " - " + (users[2].score || 0);
   }
 
   // Update the rankings for 4th, 5th, and 6th places
-  for (let i = 4; i <= 6; i++) {
-    const scoreElement = document.getElementById(`score${i}`);
-    const user = users[i - 1]; // Array index is 1 less than rank
+  for (var i = 4; i <= 6; i++) {
+    var scoreElement = document.getElementById("score" + i);
+    var user = users[i - 1]; // Array index is 1 less than rank
 
     if (scoreElement && user) {
-      scoreElement.textContent = `${user.fullName || "Unknown"} - ${user.score || 0}`;
+      scoreElement.textContent = (user.fullName || "Unknown") + " - " + (user.score || 0);
     }
   }
 }
@@ -212,23 +208,28 @@ function displayLeaderboard() {
 
 
 
-window.onload = function() {
-  displayLeaderboard();
-};
+
+window.onload = displayLeaderboard();
+
 
 
   // Logout ka function
   window.onload = function () {
     var logoutBtn = document.getElementById("logoutBtn");
-    
+
     if (logoutBtn) {
       logoutBtn.onclick = function () {
-        localStorage.removeItem("loggedInUserId");
-        alert("You have been logged out.");
-        window.location.href = "login.html";
+        const confirmation = confirm("Are you sure you want to log out?");
+        if (confirmation) {
+          localStorage.removeItem("loggedInUserId");
+          window.location.href = "login.html";
+        }
       };
+    } else {
+      alert("You have been logged out.");
     }
-  };
+    }
+    
   
 
 
@@ -237,4 +238,3 @@ window.onload = function() {
 
 
 
-displayQuestion(); //first question print krne ke liye
