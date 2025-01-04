@@ -345,7 +345,7 @@ header{
       margin-bottom: 30px;
     }
 
-    .position {
+    /* .position {
       text-align: center;
       margin: 0 10px;
     }
@@ -376,7 +376,7 @@ header{
     .score {
       font-weight: bold;
       margin-top: 10px;
-    }
+    } */
 
     .rankings {
       list-style: none;
@@ -392,9 +392,72 @@ header{
       margin: 5px 0;
       border-radius: 5px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-right: 20px;
+      margin-left: 20px;
+    }
+    .position1{
+      border-radius: 16px 16px 0px 0px;
+      background: #F4CE4A;
+      width: 210px;
+      height: 419px;
+      flex-shrink: 0;
+      
+    }
+    .position1 img{
+        border-radius: 50%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
+    }
+    .rank1{
+        display: block;
+        margin-left: 46%;
+        margin-right: auto;
+        width: 50%;
+    }
+    .score{
+        color: var(--black-1, #1C1C1E);
+        text-align: center;
+        font-family: Inter;
+        font-size: 24px;
+        font-style: normal;
+        font-weight: 700;
+        line-height: 120%; /* 38.4px */
+    }
+   
+    .position-first{
+        border-radius: 16px 16px 0px 0px;
+        background: var(--Brand-Yellow, #F3BD00);
+        width: 210px;
+        height: 419px;
+        flex-shrink: 0;
+    }
+    .position-first img{
+        border-radius: 50%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
     }
 
-    .rankings li:nth-child(odd) {
-      background: #f9f9f9;
+    .position3{
+        width: 210px;
+        height: 419px;
+        flex-shrink: 0;
+        border-radius: 16px 16px 0px 0px;
+        background: #F7E296;
     }
- 
+    .rank2{
+        display: block;
+        margin-left: 46%;
+        margin-right: auto;
+        width: 50%;
+    }
+    .position1 img{
+        border-radius: 50%;
+        display: block;
+        margin-left: 46px;
+        margin-right: auto;
+        width: 50%;
+    }

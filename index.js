@@ -53,8 +53,8 @@ function validateLogin(event) {
 }
 
 let quizData = [
-  { "question": "What is the effect of the b tag?", "answers": ["<i>", "<italic>", "<it>", "<pre>"], "correct": 0, "choosedAnswer": null },
-  { "question": "What does the i tag do?", "answers": ["It makes text bold.", "It italicizes text.", "It underlines text.", "It changes the font color."], "correct": 1, "choosedAnswer": null },
+  { "question": "What is the effect of the i tag?", "answers": ["<i>", "<italic>", "<it>", "<pre>"], "correct": 0, "choosedAnswer": null },
+  { "question": "What does the b tag do?", "answers": ["It makes text bold.", "It italicizes text.", "It underlines text.", "It changes the font color."], "correct": 1, "choosedAnswer": null },
   { "question": "Which tag is used to create a hyperlink?", "answers": ["<a>", "<href>", "<link>", "<url>"], "correct": 0, "choosedAnswer": null },
   { "question": "What is the effect of the u tag?", "answers": ["It underlines text.", "It makes text bold.", "It italicizes text.", "It changes text color."], "correct": 0, "choosedAnswer": null },
   { "question": "Which tag is used to insert an image?", "answers": ["<image>", "<img>", "<pic>", "<src>"], "correct": 1, "choosedAnswer": null },
