@@ -4,8 +4,9 @@ function handleFormSubmit(event) {
   const fullName = document.getElementById("name")?.value.trim();
   const email = document.getElementById("email")?.value.trim();
   const password = document.getElementById("password")?.value.trim();
+  const checkbox = document.getElementById("checkbox")?.value.trim();
 
-  if (!fullName || !email || !password) {
+  if (!fullName || !email || !password || !checkbox) {
     alert("Please fill out all fields.");
     return;
   }
@@ -15,6 +16,9 @@ function handleFormSubmit(event) {
     alert("Password must be at least 8 characters long and include at least one special character.");
     return;
   }
+
+  
+
 
   const userData = {
     id: Date.now(),
@@ -32,6 +36,18 @@ function handleFormSubmit(event) {
   window.location.href = "login.html";
 
   document.getElementById("signupForm").reset();
+}
+
+function togglePassword() {
+  const passwordField = document.getElementById('password');
+  const eyeIcon = document.getElementById('eye');
+  if (passwordField.type === 'password') {
+    passwordField.type = 'text';
+    eyeIcon.classList.replace('fa-eye', 'fa-eye-slash');
+  } else {
+    passwordField.type = 'password';
+    eyeIcon.classList.replace('fa-eye-slash', 'fa-eye');
+  }
 }
 
 function validateLogin(event) {
@@ -72,10 +88,68 @@ let currentIndex = 0;
 const totalQuestions = data.length;
 let score = 0;
 
+// function displayQuestion() {
+//   if (data.length > 0) {
+//     currentIndex = currentIndex % totalQuestions;
+//     document.getElementById("ques-number").innerHTML = currentIndex + 1;
+    
+//     const randomQue = data[currentIndex];
+//     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
+//     const list = document.getElementById("option-list");
+//     list.innerHTML = "";
+
+//     randomQue.answers.forEach((option, index) => {
+//       const listItem = document.createElement("li");
+//       listItem.textContent = option;
+//       if (randomQue.choosedAnswer === index) {
+//         listItem.classList.add("selected");
+//         listItem.style.backgroundColor = "#f3bd00";
+//         listItem.style.borderRadius = "10px";
+//         listItem.style.width = "fit-content";
+//       }
+
+//       listItem.addEventListener("click", () => {
+//         randomQue.choosedAnswer = index;
+//         if (index === randomQue.correct) {
+//           score += 10;
+//         }
+//         const options = list.querySelectorAll("li");
+//         options.forEach(option => {
+//           option.classList.remove("selected");
+//           option.style = "";
+//         });
+//         listItem.classList.add("selected");
+//         listItem.style.backgroundColor = "#f3bd00";
+//         listItem.style.borderRadius = "10px";
+//         listItem.style.width = "fit-content";
+//         document.getElementById("nextBtn").disabled = false;
+//       });
+
+//       list.appendChild(listItem);
+//     });
+
+//     const previousBtn = document.getElementById("previousBtn");
+//     previousBtn.style.visibility = currentIndex === 0 ? "hidden" : "visible";
+
+//     updateProgress();
+//   }
+// }
+
 function displayQuestion() {
   if (data.length > 0) {
     currentIndex = currentIndex % totalQuestions;
-    document.getElementById("ques-number").innerHTML = currentIndex + 1;
+
+    
+    let headerText = `Question ${currentIndex + 1} of 10`;
+    if (currentIndex === totalQuestions - 2) { 
+      headerText = "Last 2 Questions Left";
+    } else if (currentIndex === totalQuestions - 1) { 
+      headerText = "Hey, this is the Last Question";
+    }
+
+    
+    document.querySelector("h1").innerHTML = headerText;
+
     const randomQue = data[currentIndex];
     document.getElementById("question-data").innerHTML = `${currentIndex + 1}. ${randomQue.question}`;
     const list = document.getElementById("option-list");
@@ -88,6 +162,7 @@ function displayQuestion() {
         listItem.classList.add("selected");
         listItem.style.backgroundColor = "#f3bd00";
         listItem.style.borderRadius = "10px";
+        listItem.style.width = "fit-content";
       }
 
       listItem.addEventListener("click", () => {
@@ -112,9 +187,14 @@ function displayQuestion() {
 
     const previousBtn = document.getElementById("previousBtn");
     previousBtn.style.visibility = currentIndex === 0 ? "hidden" : "visible";
+
     updateProgress();
   }
 }
+
+
+
+
 
 function nextQuestion() {
   const currentQuestion = data[currentIndex];
@@ -194,10 +274,10 @@ function displayLeaderboard() {
     score3.textContent = (users[2].fullName || "Unknown") + " - " + (users[2].score || 0);
   }
 
-  // Update the rankings for 4th, 5th, and 6th places
+  
   for (var i = 4; i <= 6; i++) {
     var scoreElement = document.getElementById("score" + i);
-    var user = users[i - 1]; // Array index is 1 less than rank
+    var user = users[i - 1]; 
 
     if (scoreElement && user) {
       scoreElement.textContent = (user.fullName || "Unknown") + " - " + (user.score || 0);
