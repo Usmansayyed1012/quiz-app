@@ -4,9 +4,9 @@ function handleFormSubmit(event) {
   const fullName = document.getElementById("name")?.value.trim();
   const email = document.getElementById("email")?.value.trim();
   const password = document.getElementById("password")?.value.trim();
-  const checkbox = document.getElementById("checkbox")?.value.trim();
+  // const checkbox = document.getElementById("checkbox")?.value.trim();
 
-  if (!fullName || !email || !password || !checkbox) {
+  if (!fullName || !email || !password ) {
     alert("Please fill out all fields.");
     return;
   }
