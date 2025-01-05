@@ -4,10 +4,15 @@ function handleFormSubmit(event) {
   const fullName = document.getElementById("name")?.value.trim();
   const email = document.getElementById("email")?.value.trim();
   const password = document.getElementById("password")?.value.trim();
-  // const checkbox = document.getElementById("checkbox")?.value.trim();
+  const termsAccepted = document.querySelector("input[type='checkbox']")?.checked;
 
   if (!fullName || !email || !password ) {
     alert("Please fill out all fields.");
+    return;
+  }
+
+  if (!termsAccepted) {
+    alert("You must accept the Terms & Conditions.");
     return;
   }
 
@@ -239,51 +244,31 @@ function saveScore(score) {
   } 
 }
 
+
+
+
 function displayLeaderboard() {
-  var users = JSON.parse(localStorage.getItem("users")) || [];
+  const users = JSON.parse(localStorage.getItem("users")) || [];
+  const loggedInUserId = localStorage.getItem("loggedInUserId");
 
-  if (users.length === 0) {
-    console.log("No user data available");
-    document.getElementById("userRank").textContent = " ";
-    return;
-  }
+  if (users.length === 0) return; // Agar koi user nahi hai, toh kuch mat karo
 
-  users.sort(function (a, b) {
-    return (b.score || 0) - (a.score || 0);
-  });
+  users.sort((a, b) => (b.score || 0) - (a.score || 0)); // Score ke hisaab se sort karoega
 
-  var topUser = users[0];
-  if (topUser) {
-    document.getElementById("userRank").textContent = "1"; 
-  }
+  // Logged-in user ka rank aur score dikhana
+  const rank = users.findIndex(user => user.id == loggedInUserId) + 1;
+  document.getElementById("userRank").textContent = rank || " ";
 
-  // Update the top 3 scores (Podium)
-  var score1 = document.getElementById("score1");
-  var score2 = document.getElementById("score2");
-  var score3 = document.getElementById("score3");
-
-  if (score1 && users[0]) {
-    score1.textContent = (users[0].fullName || "Unknown") + " - " + (users[0].score || 0);
-  }
-
-  if (score2 && users[1]) {
-    score2.textContent = (users[1].fullName || "Unknown") + " - " + (users[1].score || 0);
-  }
-
-  if (score3 && users[2]) {
-    score3.textContent = (users[2].fullName || "Unknown") + " - " + (users[2].score || 0);
-  }
-
-  
-  for (var i = 4; i <= 6; i++) {
-    var scoreElement = document.getElementById("score" + i);
-    var user = users[i - 1]; 
-
+  // Top 6 ranks ke scores dikhana
+  for (let i = 1; i <= 6; i++) {
+    const scoreElement = document.getElementById(`score${i}`);
+    const user = users[i - 1]; // Rank 1 ke liye index 0
     if (scoreElement && user) {
-      scoreElement.textContent = (user.fullName || "Unknown") + " - " + (user.score || 0);
+      scoreElement.textContent = `${user.fullName || "Unknown"} - ${user.score || 0}`;
     }
   }
 }
+
 
 
 
@@ -294,21 +279,49 @@ window.onload = displayLeaderboard();
 
 
   // Logout ka function
-  window.onload = function () {
-    var logoutBtn = document.getElementById("logoutBtn");
+  // window.onload = function () {
+  //   var logoutBtn = document.getElementById("logoutBtn");
 
-    if (logoutBtn) {
-      logoutBtn.onclick = function () {
-        const confirmation = confirm("Are you sure you want to log out?");
-        if (confirmation) {
-          localStorage.removeItem("loggedInUserId");
-          window.location.href = "login.html";
-        }
-      };
-    } else {
+  //   if (logoutBtn) {
+  //     logoutBtn.onclick = function () {
+  //       const confirmation = confirm("Are you sure you want to log out?");
+  //       if (confirmation) {
+  //         localStorage.removeItem("loggedInUserId");
+  //         window.location.href = "login.html";
+  //       }
+  //     };
+  //   } else {
+  //     alert("You have been logged out.");
+  //   }
+  //   }
+
+  window.onload = () => {
+    const logoutAvatar = document.getElementById("logoutAvatar");
+    const logoutModal = document.getElementById("logoutModal");
+    const cancelBtn = document.getElementById("cancelBtn");
+    const confirmLogoutBtn = document.getElementById("confirmLogoutBtn");
+    const userGreeting = document.getElementById("userGreeting");
+  
+    const currentUser = JSON.parse(localStorage.getItem("users") || "[]")
+      .find(user => user.id == localStorage.getItem("loggedInUserId"));
+  
+    if (currentUser) userGreeting.textContent = `Are you sure you want to logout, ${currentUser.fullName}?`;
+  
+    logoutAvatar?.addEventListener("click", () => logoutModal.style.display = "block");
+    cancelBtn?.addEventListener("click", () => logoutModal.style.display = "none");
+    confirmLogoutBtn?.addEventListener("click", () => {
+      localStorage.removeItem("loggedInUserId");
       alert("You have been logged out.");
-    }
-    }
+      window.location.href = "login.html";
+    });
+  
+    window.addEventListener("click", e => {
+      if (e.target === logoutModal) logoutModal.style.display = "none";
+    });
+  };
+  
+  
+  
     
   
 
