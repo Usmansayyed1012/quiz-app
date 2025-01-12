@@ -337,27 +337,3 @@ window.onload = function() {
   };
 };
 
-
-// function validateAdminLogin(event) {
-//   event.preventDefault();
-//   var adminId = document.getElementById('email').value;
-//   var adminPassword = document.getElementById('password').value;
-
-//   if (adminId === "admin123" && adminPassword === "password") {
-//       alert("Login successful!");
-//       window.location.href = "admin-dashboard.html";
-//   } else {
-//       alert("Invalid Admin ID or Password. Please try again.");
-//   }
-// }
-
-
-// ------------------------------------admin js-----------------------
-
-
-
-    //-----------------------------------------------
-
-
-    
-
