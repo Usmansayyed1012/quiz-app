@@ -70,6 +70,14 @@ function validateLogin(event) {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
 
+  // Admin login validation
+  if (email === "admin123" && password === "password") {
+    alert("Login successful!");
+    window.location.href = "admin-dashboard.html";
+    return; // Exit the function after successful admin login
+  }
+
+  // Normal user login validation
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const user = users.find(u => u.email === email && u.password === password);
 
@@ -80,16 +88,8 @@ function validateLogin(event) {
   } else {
     alert("Invalid email or password!");
   }
-
-  if (email === "admin123" && password === "password") {
-    alert("Login successful!");
-    window.location.href = "admin-dashboard.html";
-} else {
-    alert("Invalid Admin ID or Password. Please try again.");
 }
 
-
-}
 
 let quizData = [
   { "question": "What is the effect of the i tag?", "answers": ["<i>", "<italic>", "<it>", "<pre>"], "correct": 0, "choosedAnswer": null },
@@ -217,12 +217,16 @@ function saveScore(score) {
   const loggedInUserId = localStorage.getItem("loggedInUserId");
   const users = JSON.parse(localStorage.getItem("users")) || [];
   const user = users.find(u => u.id == loggedInUserId);
+
   if (user) {
     user.score = score;
+    user.testAttempts = (user.testAttempts || 0) + 1; // Increment test attempts
     localStorage.setItem("users", JSON.stringify(users));
-    alert("Your score is saved!");
+    alert(`Your score is saved! You have taken the test ${user.testAttempts} time(s).`);
     window.location.href = "leaderboard.html";
-  } 
+  } else {
+    alert("User not found!");
+  }
 }
 
 
@@ -244,7 +248,7 @@ function displayLeaderboard() {
   for (let i = 0; i < 5; i++) {
     const scoreElement = document.getElementById(`score${i + 1}`);
     if (scoreElement && users[i]) {
-      scoreElement.textContent = `${users[i].fullName} - Score: ${users[i].score}`;
+      scoreElement.textContent = `${users[i].fullName} -  ${users[i].score}`;
     } else if (scoreElement) {
       scoreElement.textContent = " ";
     }
@@ -256,7 +260,7 @@ function displayLeaderboard() {
   if (score6Element && userRankLabel) {
     if (rank > 5) {
       userRankLabel.textContent = `#${rank}`;
-      score6Element.textContent = `${loggedInUser.fullName} - Score:- ${loggedInUser.score}`;
+      score6Element.textContent = `${loggedInUser.fullName} -  ${loggedInUser.score}`;
     } else {
       userRankLabel.textContent = "#6";
       score6Element.textContent = " ";
@@ -269,24 +273,7 @@ function displayLeaderboard() {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 window.onload = displayLeaderboard();
-
-
-
 
 window.onload = function() {
   var logoutAvatar = document.getElementById("logoutAvatar");
@@ -336,4 +323,131 @@ window.onload = function() {
       }
   };
 };
+
+
+
+
+
+//--------------------------------------Admin side code-------------------------------------------------------
+
+
+// ------------------------ Hamburger Menu Toggle ------------------------
+const hamburgerBtn = document.getElementById('hamburger-btn');
+const sidebar = document.getElementById('sidebar');
+const content = document.querySelector('.content');
+
+hamburgerBtn.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  content.style.marginLeft = sidebar.classList.contains('open') ? '250px' : '0';
+});
+
+// ------------------------ Sidebar Link Active State ------------------------
+const sidebarLinks = document.querySelectorAll('#sidebar .btn');
+sidebarLinks.forEach(link => {
+  link.addEventListener('click', () => {
+    const activeLink = document.querySelector('#sidebar .btn.active');
+    if (activeLink) activeLink.classList.remove('active');
+    link.classList.add('active');
+
+    // Close sidebar after link click
+    sidebar.classList.remove('open');
+    content.style.marginLeft = '0';
+  });
+});
+
+// ------------------------ User Dropdown Toggle ------------------------
+const userIcon = document.getElementById('user-icon');
+const dropdown = document.getElementById('dropdown');
+const logoutBtn = document.getElementById('logout-btn');
+
+userIcon.addEventListener('click', () => {
+  dropdown.classList.toggle('active');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (event) => {
+  if (!dropdown.contains(event.target) && event.target !== userIcon) {
+    dropdown.classList.remove('active');
+  }
+});
+
+// Logout functionality
+logoutBtn.addEventListener('click', () => {
+  if (confirm('Are you sure you want to logout?')) {
+    alert('You have logged out successfully!');
+    window.location.href = 'login.html';
+  }
+});
+
+// ------------------------ User Management ------------------------
+
+
+// Home menu functionality
+document.addEventListener('DOMContentLoaded', () => {
+  const homeMenu = document.querySelector('a[href="#home"]');
+  const mainContent = document.querySelector('.content');
+
+  // Load and display Home content
+  homeMenu.addEventListener('click', () => {
+    mainContent.innerHTML = `
+      <h2>Welcome to Admin Page !!!</h2>
+    `;
+  });
+});
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const usersMenu = document.querySelector('a[href="#users"]');
+  const quizzesMenu = document.querySelector('a[href="#quizzes"]');
+  const mainContent = document.querySelector('.content');
+
+  // Users section
+  usersMenu.addEventListener('click', () => {
+    const users = JSON.parse(localStorage.getItem('users')) || [];
+    if (users.length === 0) {
+      mainContent.innerHTML = '<h3>No users found!</h3>';
+      return;
+    }
+
+    let tableHTML = `
+      <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+          <tr>
+            <th>Sr. No</th>
+            <th>Name</th>
+            <th>Email-id</th>
+            <th>No. of Tests Given</th>
+            <th>Scores</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    users.forEach((user, index) => {
+      // Assuming `tests` is an array that tracks all test attempts for the user
+      const testsGiven = user.tests ? user.tests.length : 0;
+    
+      tableHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${user.fullName}</td>
+          <td>${user.email}</td>
+          <td>${testsGiven}</td> <!-- Updated to show the number of tests -->
+          <td>${user.score || 0}</td>
+          <td><button onclick="viewTests(${index})">View Tests</button></td>
+        </tr>
+      `;
+    });
+    
+
+    tableHTML += `</tbody></table>`;
+    mainContent.innerHTML = tableHTML;
+  });
+
+});
+
+
+
+//quizes
 
