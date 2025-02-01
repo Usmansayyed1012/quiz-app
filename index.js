@@ -6,7 +6,7 @@ function handleFormSubmit(event) {
   const password = document.getElementById("password")?.value.trim();
   const termsAccepted = document.querySelector("input[type='checkbox']")?.checked;
 
-  if (!fullName || !email || !password ) {
+  if (!fullName || !email || !password) {
     alert("Please fill out all fields.");
     return;
   }
@@ -40,7 +40,8 @@ function handleFormSubmit(event) {
     fullName,
     email,
     password,
-    score: 0
+    score: 0,
+    tests: [] // Initialize an empty array for test details
   };
 
   let users = JSON.parse(localStorage.getItem("users")) || [];
@@ -104,13 +105,18 @@ let quizData = [
   { "question": "Which tag is used to create a list item?", "answers": ["<item>", "<li>", "<ul>", "<list>"], "correct": 1, "choosedAnswer": null }
 ];
 
+const users = JSON.parse(localStorage.getItem("users")) || [];
+users.forEach(user => {
+  user.tests = user.tests || []; // Initialize tests if undefined
+});
+localStorage.setItem("users", JSON.stringify(users));
+
 const selectedQuestions = quizData.sort(() => Math.random() - 0.5).slice(0, 10);
 localStorage.setItem("selectedQuestion", JSON.stringify(selectedQuestions));
 let data = JSON.parse(localStorage.getItem("selectedQuestion")) || [];
 let currentIndex = 0;
 const totalQuestions = data.length;
 let score = 0;
-
 
 function displayQuestion() {
   if (data.length > 0) {
@@ -129,9 +135,7 @@ function displayQuestion() {
     const list = document.getElementById("option-list");
     list.innerHTML = "";
 
-
     randomQue.answers.forEach((option, index) => {
-
       const listItem = document.createElement("li");
       listItem.textContent = option;
       if (randomQue.choosedAnswer === index) {
@@ -169,25 +173,18 @@ function displayQuestion() {
   }
 }
 
-
-
-
-
 function nextQuestion() {
   const currentQuestion = data[currentIndex];
-  
 
   if (currentQuestion.choosedAnswer === null) {
     alert("Please select an answer before proceeding!");
     return;
   }
 
-  
   if (currentIndex < totalQuestions - 1) {
     currentIndex++;
     displayQuestion();
   } else {
-    
     const confirmation = confirm("Are you sure you want to submit?");
     if (confirmation) {
       saveScore(score);
@@ -196,7 +193,6 @@ function nextQuestion() {
     }
   }
 }
-
 
 function previousQuestion() {
   if (currentIndex > 0) {
@@ -219,20 +215,28 @@ function saveScore(score) {
   const user = users.find(u => u.id == loggedInUserId);
 
   if (user) {
-    user.score = score;
-    user.testAttempts = (user.testAttempts || 0) + 1; // Increment test attempts
+    const testDetails = {
+      date: new Date().toLocaleString(), // Store test date
+      score: score, // Store score
+      correctAnswers: Math.floor(score / 10), // Assuming each correct answer gives 10 points
+    };
+
+    user.tests = user.tests || []; // Ensure tests array exists
+    user.tests.push(testDetails);
+
+    // Debugging: Log user and tests data
+    console.log("Updated user:", user);
+    console.log("User tests:", user.tests);
+
+    // Save updated users back to localStorage
     localStorage.setItem("users", JSON.stringify(users));
-    alert(`Your score is saved! You have taken the test ${user.testAttempts} time(s).`);
+
+    alert(`Your score is saved! You have taken the test ${user.tests.length} time(s).`);
     window.location.href = "leaderboard.html";
   } else {
     alert("User not found!");
   }
 }
-
-
-
-
-
 
 function displayLeaderboard() {
   const users = JSON.parse(localStorage.getItem("users")) || [];
@@ -273,9 +277,9 @@ function displayLeaderboard() {
   }
 }
 
-window.onload = displayLeaderboard();
-
 window.onload = function() {
+  displayLeaderboard();
+
   var logoutAvatar = document.getElementById("logoutAvatar");
   var logoutModal = document.getElementById("logoutModal");
   var cancelBtn = document.getElementById("cancelBtn");
@@ -287,40 +291,40 @@ window.onload = function() {
   var currentUser = null;
 
   for (var i = 0; i < users.length; i++) {
-      if (users[i].id == loggedInUserId) {
-          currentUser = users[i];
-          break;
-      }
+    if (users[i].id == loggedInUserId) {
+      currentUser = users[i];
+      break;
+    }
   }
 
   if (currentUser) {
-      userGreeting.textContent = "Are you sure you want to logout, " + currentUser.fullName + "?";
+    userGreeting.textContent = "Are you sure you want to logout, " + currentUser.fullName + "?";
   }
 
   if (logoutAvatar) {
-      logoutAvatar.onclick = function() {
-          logoutModal.style.display = "block";
-      };
+    logoutAvatar.onclick = function() {
+      logoutModal.style.display = "block";
+    };
   }
 
   if (cancelBtn) {
-      cancelBtn.onclick = function() {
-          logoutModal.style.display = "none";
-      };
+    cancelBtn.onclick = function() {
+      logoutModal.style.display = "none";
+    };
   }
 
   if (confirmLogoutBtn) {
-      confirmLogoutBtn.onclick = function() {
-          localStorage.removeItem("loggedInUserId");
-          alert("You have been logged out.");
-          window.location.href = "login.html";
-      };
+    confirmLogoutBtn.onclick = function() {
+      localStorage.removeItem("loggedInUserId");
+      alert("You have been logged out.");
+      window.location.href = "login.html";
+    };
   }
 
   window.onclick = function(e) {
-      if (e.target === logoutModal) {
-          logoutModal.style.display = "none";
-      }
+    if (e.target === logoutModal) {
+      logoutModal.style.display = "none";
+    }
   };
 };
 
@@ -382,6 +386,8 @@ logoutBtn.addEventListener('click', () => {
 // ------------------------ User Management ------------------------
 
 
+
+
 // Home menu functionality
 document.addEventListener('DOMContentLoaded', () => {
   const homeMenu = document.querySelector('a[href="#home"]');
@@ -395,10 +401,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
-
 document.addEventListener('DOMContentLoaded', () => {
   const usersMenu = document.querySelector('a[href="#users"]');
-  const quizzesMenu = document.querySelector('a[href="#quizzes"]');
   const mainContent = document.querySelector('.content');
 
   // Users section
@@ -425,29 +429,91 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
 
     users.forEach((user, index) => {
-      // Assuming `tests` is an array that tracks all test attempts for the user
       const testsGiven = user.tests ? user.tests.length : 0;
-    
+
       tableHTML += `
         <tr>
           <td>${index + 1}</td>
           <td>${user.fullName}</td>
           <td>${user.email}</td>
-          <td>${testsGiven}</td> <!-- Updated to show the number of tests -->
+          <td>${testsGiven}</td>
           <td>${user.score || 0}</td>
           <td><button onclick="viewTests(${index})">View Tests</button></td>
         </tr>
       `;
     });
-    
+
+    tableHTML += `</tbody></table>`;
+    mainContent.innerHTML = tableHTML;
+  });
+});
+
+
+
+document.addEventListener('DOMContentLoaded', () => {
+  const quizzesMenu = document.querySelector('a[href="#quizzes"]');
+  const mainContent = document.querySelector('.content');
+
+  quizzesMenu.addEventListener('click', () => {
+    const quizzes = JSON.parse(localStorage.getItem('users')) || [];
+    if (quizzes.length === 0) {
+      mainContent.innerHTML = '<h3>No quizzes found!</h3>';
+      return;
+    }
+
+    let tableHTML = `
+      <div class="quiz-header">
+        <h2>MCQ Question Lists</h2>
+        <hr>
+        <button type="button" class="add-btn" onclick="addNewQuiz()">Add new Question</button>
+      </div>
+      <table border="1" cellspacing="0" cellpadding="5">
+        <thead>
+          <tr>
+            <th>Sr No</th>
+            <th>Questions</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+
+    quizzes.forEach((quiz, index) => {
+      tableHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${quiz.question}</td>
+          <td>
+            <button onclick="viewQuiz(${index})" class="view-btn">👁️</button>
+            <button onclick="editQuiz(${index})" class="edit-btn">✏️</button>
+            <button onclick="deleteQuiz(${index})" class="delete-btn">🗑️</button>
+          </td>
+        </tr>
+      `;
+    });
 
     tableHTML += `</tbody></table>`;
     mainContent.innerHTML = tableHTML;
   });
 
+  // Functions for handling actions
+  window.addNewQuiz = function() {
+    alert("Add New Quiz functionality to be implemented!");
+  };
+
+  window.viewQuiz = function(index) {
+    alert(`View Quiz functionality for quiz ${index + 1} to be implemented!`);
+  };
+
+  window.editQuiz = function(index) {
+    alert(`Edit Quiz functionality for quiz ${index + 1} to be implemented!`);
+  };
+
+  window.deleteQuiz = function(index) {
+    alert(`Delete Quiz functionality for quiz ${index + 1} to be implemented!`);
+  };
 });
 
 
 
-//quizes
 

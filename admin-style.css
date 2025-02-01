@@ -62,7 +62,7 @@ body {
   position: fixed;
   top: 80px; /* Adjust for navbar height */
   left: -350px; /* Hidden by default */
-  width: 250px;
+  width: 200px;
   height: 100%;
   background-color: #f8f9fa;
   border-right: 1px solid #ddd;
@@ -130,7 +130,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 50vh;
+  /* height: 50vh; */
 }
 
 /* Dropdown Menu */
@@ -209,4 +209,76 @@ table td button {
 
 table td button:hover {
   background-color: #574bdb;
+}
+
+
+/* ---------------------------------------quizes------------------------ */
+ .quiz-header {
+  margin-bottom: 20px;
+} 
+
+
+.content h2 {
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.add-btn {
+  background-color: green;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  /* text-align: end; */
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.add-btn:hover {
+  background-color: darkgreen;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 10px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f4f4;
+}
+
+.view-btn, .edit-btn, .delete-btn {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-size: 16px;
+}
+
+.view-btn:hover {
+  color: blue;
+}
+
+.edit-btn:hover {
+  color: orange;
+}
+
+.delete-btn:hover {
+  color: red;
+}
+
+.content h2 {
+  font-size: 40px;
+  font-weight: bold;
+  color: #333;
+  display: block
 }
