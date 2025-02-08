@@ -449,13 +449,16 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-
 document.addEventListener('DOMContentLoaded', () => {
   const quizzesMenu = document.querySelector('a[href="#quizzes"]');
   const mainContent = document.querySelector('.content');
+  const modal = document.getElementById("createQuestionModal");
+  const questionForm = document.getElementById("questionForm");
 
-  quizzesMenu.addEventListener('click', () => {
-    const quizzes = JSON.parse(localStorage.getItem('users')) || [];
+  // Function to render quizzes table
+  function renderQuizzes() {
+    const quizzes = JSON.parse(localStorage.getItem('selectedQuestion')) || [];
+
     if (quizzes.length === 0) {
       mainContent.innerHTML = '<h3>No quizzes found!</h3>';
       return;
@@ -465,7 +468,9 @@ document.addEventListener('DOMContentLoaded', () => {
       <div class="quiz-header">
         <h2>MCQ Question Lists</h2>
         <hr>
-        <button type="button" class="add-btn" onclick="addNewQuiz()">Add new Question</button>
+        <div class="button-new-question" >
+          <button type="button" class="add-btn" onclick="openModal()">Add new Question</button>
+        </div>
       </div>
       <table border="1" cellspacing="0" cellpadding="5">
         <thead>
@@ -494,26 +499,115 @@ document.addEventListener('DOMContentLoaded', () => {
 
     tableHTML += `</tbody></table>`;
     mainContent.innerHTML = tableHTML;
+  }
+
+  quizzesMenu.addEventListener('click', renderQuizzes);
+
+  // Open modal function
+  window.openModal = function () {
+    modal.style.display = "block";
+  };
+
+  // Close modal function
+  window.closeModal = function () {
+    modal.style.display = "none";
+  };
+
+  // Close modal when clicking outside
+  window.onclick = function (event) {
+    if (event.target === modal) {
+      closeModal();
+    }
+  };
+
+  // Handle form submission
+  questionForm.addEventListener("submit", function (event) {
+    event.preventDefault(); // Prevent page reload
+
+    const newQuiz = {
+      question: document.getElementById("questionInput").value,
+      options: [
+        document.getElementById("option1").value,
+        document.getElementById("option2").value,
+        document.getElementById("option3").value,
+        document.getElementById("option4").value,
+      ],
+      correctAnswer: document.getElementById("correctOption").value
+    };
+
+    // Get existing quizzes from localStorage
+    let quizzes = JSON.parse(localStorage.getItem("selectedQuestion")) || [];
+    quizzes.push(newQuiz);
+
+    // Save updated list back to localStorage
+    localStorage.setItem("selectedQuestion", JSON.stringify(quizzes));
+
+    // Close modal and refresh table
+    closeModal();
+    renderQuizzes();
+
+    // Reset form
+    questionForm.reset();
   });
 
-  // Functions for handling actions
-  window.addNewQuiz = function() {
-    alert("Add New Quiz functionality to be implemented!");
-  };
+ // Function to delete quiz with confirmation
+window.deleteQuiz = function (index) {
+  const confirmDelete = confirm("Are you sure you want to delete this question?");
+  if (confirmDelete) {
+    let quizzes = JSON.parse(localStorage.getItem("selectedQuestion")) || [];
+    quizzes.splice(index, 1);
+    localStorage.setItem("selectedQuestion", JSON.stringify(quizzes));
+    renderQuizzes();
+  }
+};
 
-  window.viewQuiz = function(index) {
-    alert(`View Quiz functionality for quiz ${index + 1} to be implemented!`);
-  };
 
-  window.editQuiz = function(index) {
-    alert(`Edit Quiz functionality for quiz ${index + 1} to be implemented!`);
-  };
 
-  window.deleteQuiz = function(index) {
-    alert(`Delete Quiz functionality for quiz ${index + 1} to be implemented!`);
-  };
+
+// Function to view quiz details safely
+window.viewQuiz = function (index) {
+  let quizzes = JSON.parse(localStorage.getItem("selectedQuestion")) || [];
+
+  if (!Array.isArray(quizzes) || index < 0 || index >= quizzes.length) {
+    alert("Invalid question selection.");
+    return;
+  }
+
+  let quiz = quizzes[index];
+
+  if (!quiz || !quiz.question || !Array.isArray(quiz.options)) {
+    alert("Question data is corrupted or missing.");
+    return;
+  }
+
+  let viewModal = document.getElementById("viewQuestionModal");
+  viewModal.innerHTML = ""; // Clear previous content
+
+  let modalContent = document.createElement("div");
+  modalContent.classList.add("modal-content");
+
+  modalContent.innerHTML = `
+    <span class="close-btn" onclick="closeViewModal()">&times;</span>
+    <h2>Question Details</h2>
+    <p><strong>Question:</strong> ${quiz.question}</p>
+    <p><strong>Options:</strong></p>
+    <ul>
+      <li>${quiz.options[0] ?? "N/A"}</li>
+      <li>${quiz.options[1] ?? "N/A"}</li>
+      <li>${quiz.options[2] ?? "N/A"}</li>
+      <li>${quiz.options[3] ?? "N/A"}</li>
+    </ul>
+    <p><strong>Correct Answer:</strong> ${quiz.correctAnswer ?? "N/A"}</p>
+  `;
+
+  viewModal.appendChild(modalContent);
+  viewModal.style.display = "block";
+};
+
+
+
+  // Load quizzes initially when quizzes menu is clicked
+  if (window.location.hash === "#quizzes") {
+    renderQuizzes();
+  }
 });
-
-
-
-
